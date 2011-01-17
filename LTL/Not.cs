@@ -59,6 +59,22 @@ namespace LittleSharp.LTL
 		{
 			return string.Format ("~ {0}", Enclosed);
 		}
+		
+		
+		public LTLFormula getSub1 ()
+		{
+			return Enclosed;
+		}
+
+		public LTLFormula getSub2 ()
+		{
+			return default(LTLFormula);
+		}
+
+		public LTLFormula getNext ()
+		{
+			return default(LTLFormula);
+		}
 	}
 }
 

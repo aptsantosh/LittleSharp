@@ -56,6 +56,21 @@ namespace LittleSharp.LTL
 			return new Not(this);
 		}
 		
+		
+		public LTLFormula getSub1 ()
+		{
+			return default(LTLFormula);
+		}
+
+		public LTLFormula getSub2 ()
+		{
+			return default(LTLFormula);
+		}
+
+		public LTLFormula getNext ()
+		{
+			return default(LTLFormula);
+		}
 	}
 }
 

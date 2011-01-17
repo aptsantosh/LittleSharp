@@ -72,6 +72,21 @@ namespace LittleSharp.LTL
 		{
 			return string.Format ("({0} R {1})", Left, Right);
 		}
+		
+		public LTLFormula getSub1 ()
+		{
+			return Right;
+		}
+
+		public LTLFormula getSub2 ()
+		{
+			return Left;
+		}
+
+		public LTLFormula getNext ()
+		{
+			return this;
+		}
 	}
 }
 
