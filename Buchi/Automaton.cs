@@ -24,9 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using LittleSharp.Utils;
+
 namespace LittleSharp.Buchi
 {
-	public class LabelledGeneralizedAutomaton
+	public class Automaton
 	{
 		
 		public Set<Node> Nodes  {
@@ -34,10 +36,22 @@ namespace LittleSharp.Buchi
 			private set;
 		}
 		
-		public LabelledGeneralizedAutomaton ()
+		public Automaton ()
 		{
 			Nodes = new Set<Node>();
 		}
+		
+		public Node Similar (Node comparable)
+		{
+			foreach (Node n in Nodes) {
+				if (ListUtils.AreListEquals(n.Old, comparable.Old)
+					&& ListUtils.AreListEquals(n.Next, comparable.Next)) {
+					return n;
+				}
+			}
+			return default(Node);
+		}
+		
 	}
 }
 
