@@ -25,20 +25,21 @@
 // THE SOFTWARE.
 using System;
 using LittleSharp.Utils;
+using System.Collections.Generic;
 
 namespace LittleSharp.Buchi
 {
 	public class Automaton
 	{
 		
-		public Set<Node> Nodes  {
+		public List<Node> Nodes  {
 			get;
 			private set;
 		}
 		
 		public Automaton ()
 		{
-			Nodes = new Set<Node>();
+			Nodes = new List<Node>();
 		}
 		
 		public Node Similar (Node comparable)
@@ -49,6 +50,7 @@ namespace LittleSharp.Buchi
 					return n;
 				}
 			}
+						
 			return default(Node);
 		}
 		
