@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace LittleSharp.Utils
 {
@@ -68,6 +69,29 @@ namespace LittleSharp.Utils
 			
 			return false;
 		}
+		
+		/// <summary>
+		/// Adds the given element in the list, iff the element is not yet in the list.
+		/// </summary>
+		/// <param name='list'>
+		/// The list.
+		/// </param>
+		/// <param name='element'>
+		/// The element to add.
+		/// </param>
+		/// <typeparam name='T'>
+		/// The type of the list, and of the element
+		/// </typeparam>
+		public static void AddsUnique<T> (List<T> list, T element)
+		{
+			foreach (T e in list) {
+				if (e.Equals(element)) {
+					return;
+				}
+			}
+			list.Add(element);
+		}
+		
 	}
 }
 
