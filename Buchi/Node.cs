@@ -140,7 +140,7 @@ namespace LittleSharp.Buchi
 		public Node (string name, LTLFormula initialObligations)
 			: this(name)
 		{
-			New.Add(initialObligation);
+			ListUtils.AddsUnique(New, initialObligations);
 		}
 		
 		/// <summary>
@@ -152,16 +152,46 @@ namespace LittleSharp.Buchi
 		/// <param name='initialObligations'>
 		/// The initial obligations.
 		/// </param>
-		public Node (Node incoming, Set<LTLFormula> initialObligations)
+		public Node (Node incoming, Queue<LTLFormula> initialObligations)
 			: this()
 		{
-			New.Add(initialObligations);
-			Incoming.Add(incoming);
+			foreach (LTLFormula obligation in initialObligations) {
+				ListUtils.AddsUnique(New, obligation);
+			}
+			ListUtils.AddsUnique(Incoming, incoming);
 		}
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LittleSharp.Buchi.Node"/> class with the given queues.
 		/// </summary>
+		/// <param name='name'>
+		/// The name of the node.
+		/// </param>
+		/// <param name='incoming'>
+		/// The set of edge incoming to the node, represented by nodes at the origin of the edges.
+		/// </param>
+		/// <param name='initialObligations'>
+		/// The set of formula that must hold for that node and that have not already been processed.
+		/// </param>
+		/// <param name='old'>
+		/// The set of formula that must hold for that node and that have already been processed.
+		/// </param>
+		/// <param name='next'>
+		/// The set of formula that must hold for all succesor node.
+		/// </param>
+		public Node (String name, Queue<Node> incoming, Queue<LTLFormula> initialObligations, Queue<LTLFormula> old, Queue<LTLFormula> next)
+			: this(incoming, initialObligations, old, next)
+		{
+			Name = name;
+		}
+		
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LittleSharp.Buchi.Node"/> class with the given queues.
+		/// </summary>
+		/// <param name='name'>
+		/// The name of the node.
+		/// </param>
 		/// <param name='incoming'>
 		/// The set of edge incoming to the node, represented by nodes at the origin of the edges.
 		/// </param>
@@ -178,7 +208,6 @@ namespace LittleSharp.Buchi
 			: this()
 		{
 			// Add all elements from all sets. Create new sets to avoid queue to be shared.
-			
 			foreach (Node n in incoming) {
 				Incoming.Enqueue(n);
 			}
@@ -209,7 +238,7 @@ namespace LittleSharp.Buchi
 				
 				if (node != default(Node)) {
 					foreach (Node incomingNode in Incoming) {
-						node.Incoming.Add(incomingNode);
+						ListUtils.AddsUnique(node.Incoming, incomingNode);
 					}
 					return automaton;
 					
@@ -228,7 +257,7 @@ namespace LittleSharp.Buchi
 					if (Old.Contains(notN)) {
 						return automaton;
 					} else {
-						Old.Add(n);
+						ListUtils.AddsUnique(Old, n);
 						return this.Expand(automaton);
 					}
 				} else if (n is Until | n is Release | n is Or) {
@@ -256,17 +285,17 @@ namespace LittleSharp.Buchi
 					}
 					
 					if (!Old.Contains(new1)) {
-						n1.New.Add(new1);
+						ListUtils.AddsUnique(n1.New, new1);
 					}
 					
 					if (!Old.Contains(new2)) {
-						n2.New.Add(new2);
+						ListUtils.AddsUnique(n2.New, new2);
 					}
 										
-					n1.Old.Add(n);
-					n2.Old.Add(n);
+					ListUtils.AddsUnique(n1.Old, n);
+					ListUtils.AddsUnique(n2.Old, n);
 					
-					n1.Next.Add(next);
+					ListUtils.AddsUnique(n1.Next, next);
 					
 					return n2.Expand(n1.Expand(automaton));
 					
@@ -275,16 +304,16 @@ namespace LittleSharp.Buchi
 					
 					Node newNode = new Node(Name, Incoming, New, Old, Next);
 					if (!Old.Contains(andN.Left)) {
-						newNode.New.Add(new2);
+						ListUtils.AddsUnique(newNode.New, andN.Left);
 					}
 					if (!Old.Contains(andN.Right)) {
-						newNode.New.Add(new2);
+						ListUtils.AddsUnique(newNode.New, andN.Right);
 					}
-					newNode.Old.Add(n);
+					ListUtils.AddsUnique(newNode.Old, n);
 					
 					return newNode.Expand(automaton);
 				}
-				
+				return null;
 			}
 		}
 		
