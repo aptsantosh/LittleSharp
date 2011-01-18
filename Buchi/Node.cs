@@ -48,18 +48,7 @@ namespace LittleSharp.Buchi
 		/// The name counter (used to generate unique names)
 		/// </summary>
 		private static int nameCounter = 0;
-		
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="LittleSharp.Buchi.Node"/> is an initial node.
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if the node is initial; otherwise, <c>false</c>.
-		/// </value>
-		public bool Initial {
-			get ;
-			set ;
-		}
-		
+			
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="LittleSharp.Buchi.Node"/> is accepting.
 		/// </summary>
@@ -74,7 +63,7 @@ namespace LittleSharp.Buchi
 		/// <summary>
 		/// A set of nodes representing the edges incoming to the current one.
 		/// </summary>
-		public Queue<Node> Incoming {
+		public Queue<string> Incoming {
 			get ;
 			private set ;
 		}
@@ -109,8 +98,8 @@ namespace LittleSharp.Buchi
 		/// </summary>
 		public Node ()
 		{
-			Name = String.Format("Node {0}", nameCounter++);
-			Incoming = new Queue<Node>();
+			Name = String.Format("node{0}", nameCounter++);
+			Incoming = new Queue<string>();
 			New = new Queue<LTLFormula>();
 			Old = new Queue<LTLFormula>();
 			Next = new Queue<LTLFormula>();
@@ -158,7 +147,7 @@ namespace LittleSharp.Buchi
 			foreach (LTLFormula obligation in initialObligations) {
 				ListUtils.AddsUnique(New, obligation);
 			}
-			ListUtils.AddsUnique(Incoming, incoming);
+			ListUtils.AddsUnique(Incoming, incoming.Name);
 		}
 		
 		/// <summary>
@@ -179,7 +168,7 @@ namespace LittleSharp.Buchi
 		/// <param name='next'>
 		/// The set of formula that must hold for all succesor node.
 		/// </param>
-		public Node (String name, Queue<Node> incoming, Queue<LTLFormula> initialObligations, Queue<LTLFormula> old, Queue<LTLFormula> next)
+		public Node (String name, Queue<string> incoming, Queue<LTLFormula> initialObligations, Queue<LTLFormula> old, Queue<LTLFormula> next)
 			: this(incoming, initialObligations, old, next)
 		{
 			Name = name;
@@ -204,11 +193,11 @@ namespace LittleSharp.Buchi
 		/// <param name='next'>
 		/// The set of formula that must hold for all succesor node.
 		/// </param>
-		public Node (Queue<Node> incoming, Queue<LTLFormula> initialObligations, Queue<LTLFormula> old, Queue<LTLFormula> next)
+		public Node (Queue<string> incoming, Queue<LTLFormula> initialObligations, Queue<LTLFormula> old, Queue<LTLFormula> next)
 			: this()
 		{
 			// Add all elements from all sets. Create new sets to avoid queue to be shared.
-			foreach (Node n in incoming) {
+			foreach (string n in incoming) {
 				Incoming.Enqueue(n);
 			}
 			
@@ -237,14 +226,14 @@ namespace LittleSharp.Buchi
 				Node node = automaton.Similar(this);
 				
 				if (node != default(Node)) {
-					foreach (Node incomingNode in Incoming) {
+					foreach (string incomingNode in Incoming) {
 						ListUtils.AddsUnique(node.Incoming, incomingNode);
 					}
 					return automaton;
 					
 				} else {
 					Node n = new Node(this, Next);
-					automaton.Nodes.Add(n);
+					ListUtils.AddsUnique(automaton.Nodes, this);
 					
 					return n.Expand(automaton);
 				}

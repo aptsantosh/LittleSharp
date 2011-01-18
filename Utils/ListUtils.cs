@@ -134,13 +134,11 @@ namespace LittleSharp.Utils
 		{
 			// Fast-exit, this is the same list
 			if (q1 == q2) {
-				// System.Console.WriteLine ("Fast-exist, same reference");
 				return true;
 			}
 			
 			// Fast-exit, one of the list is empty
 			if (q1 == null | q2 == null) {
-				// System.Console.WriteLine ("Fast-exists, null queue");
 				return false;
 			}
 			
@@ -149,7 +147,6 @@ namespace LittleSharp.Utils
 				T[] l2 = q2.ToArray();
 			
 				for (int i = 0; i < l1.Length; i++) {
-					// System.Console.WriteLine ("Comparing '{0}' with '{1}'", l1[i], l2[i]);
 					if (!l1[i].Equals(l2[i])) {
 						return false;
 					}
@@ -157,7 +154,6 @@ namespace LittleSharp.Utils
 				return true;
 			}
 			
-			// System.Console.WriteLine ("Fast-exist, size different '{0}' vs. '{1}'", q1.Count, q2.Count);
 			return false;
 		}
 		
