@@ -92,6 +92,70 @@ namespace LittleSharp.Utils
 			list.Add(element);
 		}
 		
+		/// <summary>
+		/// Adds the given element in the queue, iff the element is not yet in the queue.
+		/// </summary>
+		/// <param name='list'>
+		/// The queue.
+		/// </param>
+		/// <param name='element'>
+		/// The element to add.
+		/// </param>
+		/// <typeparam name='T'>
+		/// The type of the queue, and of the element
+		/// </typeparam>
+		public static void AddsUnique<T> (Queue<T> queue, T element)
+		{
+			foreach (T e in queue) {
+				if (e.Equals(element)) {
+					return;
+				}
+			}
+			queue.Enqueue(element);
+		}
+		
+		/// <summary>
+		/// Deeply compare two given queue.
+		/// </summary>
+		/// <returns>
+		/// Whether the queue are equals.
+		/// </returns>
+		/// <param name='l1'>
+		/// A queue to compare with.
+		/// </param>
+		/// <param name='l2'>
+		/// A queue to compage with.
+		/// </param>
+		/// <typeparam name='T'>
+		/// The type of value contained in queue.
+		/// </typeparam>
+		public static bool AreListEquals<T> (Queue<T> q1, Queue<T> q2)
+		{
+			// Fast-exit, this is the same list
+			if (q1 == q2) {
+				return true;
+			}
+			
+			// Fast-exit, one of the list is empty
+			if (q1 == null | q2 == null) {
+				return false;
+			}
+			
+			if (q1.Count == q2.Count) {
+				T[] l1 = q1.ToArray();
+				T[] l2 = q2.ToArray();
+			
+				for (int i = 0; i < l1.Length; i++) {
+					if (!l1[i].Equals(l2[i])) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			return false;
+		}
+		
 	}
 }
 
