@@ -27,6 +27,7 @@ using System;
 
 using LittleSharp.Utils;
 using LittleSharp.LTL;
+using System.Collections.Generic;
 namespace LittleSharp.Buchi
 {
 	public class Node
@@ -73,7 +74,7 @@ namespace LittleSharp.Buchi
 		/// <summary>
 		/// A set of nodes representing the edges incoming to the current one.
 		/// </summary>
-		public Set<Node> Incoming {
+		public Queue<Node> Incoming {
 			get ;
 			private set ;
 		}
@@ -81,7 +82,7 @@ namespace LittleSharp.Buchi
 		/// <summary>
 		/// The set of temporal properties that must hold at the current state and have not yet been processed.
 		/// </summary>
-		public Set<LTLFormula> New {
+		public Queue<LTLFormula> New {
 			get ; 
 			private set ;
 		}
@@ -89,7 +90,7 @@ namespace LittleSharp.Buchi
 		/// <summary>
 		/// The set of temporal properties that must hold in the node and have already been processed.
 		/// </summary>
-		public Set<LTLFormula> Old {
+		public Queue<LTLFormula> Old {
 			get;
 			private set;
 		}
@@ -98,7 +99,7 @@ namespace LittleSharp.Buchi
 		/// A set of temporal properties that must hold in all states that are immediate successors of state
 		/// satisfying the properties in <c>Old</c>.
 		/// </summary>
-		public Set<LTLFormula> Next  {
+		public Queue<LTLFormula> Next  {
 			get;
 			private set;
 		}
@@ -109,10 +110,10 @@ namespace LittleSharp.Buchi
 		public Node ()
 		{
 			Name = String.Format("Node {0}", nameCounter++);
-			Incoming = new Set<Node>();
-			New = new Set<LTLFormula>();
-			Old = new Set<LTLFormula>();
-			Next = new Set<LTLFormula>();
+			Incoming = new Queue<Node>();
+			New = new Queue<LTLFormula>();
+			Old = new Queue<LTLFormula>();
+			Next = new Queue<LTLFormula>();
 		}
 		
 		/// <summary>
@@ -159,10 +160,47 @@ namespace LittleSharp.Buchi
 		}
 		
 		/// <summary>
+		/// Initializes a new instance of the <see cref="LittleSharp.Buchi.Node"/> class with the given queues.
+		/// </summary>
+		/// <param name='incoming'>
+		/// The set of edge incoming to the node, represented by nodes at the origin of the edges.
+		/// </param>
+		/// <param name='initialObligations'>
+		/// The set of formula that must hold for that node and that have not already been processed.
+		/// </param>
+		/// <param name='old'>
+		/// The set of formula that must hold for that node and that have already been processed.
+		/// </param>
+		/// <param name='next'>
+		/// The set of formula that must hold for all succesor node.
+		/// </param>
+		public Node (Queue<Node> incoming, Queue<LTLFormula> initialObligations, Queue<LTLFormula> old, Queue<LTLFormula> next)
+			: this()
+		{
+			// Add all elements from all sets. Create new sets to avoid queue to be shared.
+			
+			foreach (Node n in incoming) {
+				Incoming.Enqueue(n);
+			}
+			
+			foreach (LTLFormula f in initialObligations) {
+				New.Enqueue(f);
+			}
+			
+			foreach (LTLFormula f in old) {
+				Old.Enqueue(f);
+			}
+			
+			foreach (LTLFormula f in next) {
+				Next.Enqueue(f);
+			}
+		}
+		
+		/// <summary>
 		/// Expand the current node into the given automaton.
 		/// </summary>
 		/// <param name='automaton'>
-		/// A given automaton to expand nodes within.
+		/// A given automaton to expand incoming within.
 		/// </param>
 		public Automaton Expand(Automaton automaton)
 		{
@@ -183,7 +221,69 @@ namespace LittleSharp.Buchi
 				}
 				
 			} else {
-				// TODO
+				LTLFormula n = New.Dequeue();
+				
+				if (n is Literal) {
+					LTLFormula notN = n.Negate();
+					if (Old.Contains(notN)) {
+						return automaton;
+					} else {
+						Old.Add(n);
+						return this.Expand(automaton);
+					}
+				} else if (n is Until | n is Release | n is Or) {
+					Node n1 = new Node(Incoming, New, Old, Next);
+					Node n2 = new Node(Incoming, New, Old, Next);
+					
+					LTLFormula new1 = null;
+					LTLFormula new2 = null;
+					LTLFormula next = null;
+					
+					if (n is Until) {
+						new1 = ((Until) n).Left;
+						next = n;
+						new2 = ((Until) n).Right;
+						
+					} else if (n is Release) {
+						new1 = ((Release) n).Right;
+						next = n;
+						new2 = ((Release) n).Left;
+												
+					} else if (n is Or) {
+						new1 = ((Or) n).Left;
+						new2 = ((Or) n).Right;
+						
+					}
+					
+					if (!Old.Contains(new1)) {
+						n1.New.Add(new1);
+					}
+					
+					if (!Old.Contains(new2)) {
+						n2.New.Add(new2);
+					}
+										
+					n1.Old.Add(n);
+					n2.Old.Add(n);
+					
+					n1.Next.Add(next);
+					
+					return n2.Expand(n1.Expand(automaton));
+					
+				} else if (n is And) {
+					And andN = (And) n;
+					
+					Node newNode = new Node(Name, Incoming, New, Old, Next);
+					if (!Old.Contains(andN.Left)) {
+						newNode.New.Add(new2);
+					}
+					if (!Old.Contains(andN.Right)) {
+						newNode.New.Add(new2);
+					}
+					newNode.Old.Add(n);
+					
+					return newNode.Expand(automaton);
+				}
 				
 			}
 		}
