@@ -84,6 +84,28 @@ namespace LittleSharp.LTL
 		{
 			return default(LTLFormula);
 		}
+		
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			if (obj.GetType () != typeof(Or))
+				return false;
+			LittleSharp.LTL.Or other = (LittleSharp.LTL.Or)obj;
+			return Left.Equals(other.Left) && Right.Equals(other.Right);
+		}
+
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return (Left != null ? Left.GetHashCode () : 0) ^ (Right != null ? Right.GetHashCode () : 0);
+			}
+		}
+
+		
 	}
 }
 
