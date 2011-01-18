@@ -29,70 +29,8 @@ using System.Text;
 
 namespace LittleSharp.Utils
 {
-	public class ListUtils
+	public class QueueUtils
 	{
-		
-		/// <summary>
-		/// Deeply compare two given lists.
-		/// </summary>
-		/// <returns>
-		/// Whether the list are equals.
-		/// </returns>
-		/// <param name='l1'>
-		/// A list to compare with.
-		/// </param>
-		/// <param name='l2'>
-		/// A list to compage with.
-		/// </param>
-		/// <typeparam name='T'>
-		/// The type of value contained in lists.
-		/// </typeparam>
-		public static bool AreListEquals<T> (List<T> l1, List<T> l2)
-		{
-			// Fast-exit, this is the same list
-			if (l1 == l2) {
-				return true;
-			}
-			
-			// Fast-exit, one of the list is empty
-			if (l1 == null | l2 == null) {
-				return false;
-			}
-			
-			if (l1.Count == l2.Count) {
-				for (int i = 0; i < l1.Count; i++) {
-					if (!l1[i].Equals(l2[i])) {
-						return false;
-					}
-				}
-				return true;
-			}
-			
-			return false;
-		}
-		
-		/// <summary>
-		/// Adds the given element in the list, iff the element is not yet in the list.
-		/// </summary>
-		/// <param name='list'>
-		/// The list.
-		/// </param>
-		/// <param name='element'>
-		/// The element to add.
-		/// </param>
-		/// <typeparam name='T'>
-		/// The type of the list, and of the element
-		/// </typeparam>
-		public static void AddsUnique<T> (List<T> list, T element)
-		{
-			foreach (T e in list) {
-				if (e.Equals(element)) {
-					return;
-				}
-			}
-			list.Add(element);
-		}
-		
 		/// <summary>
 		/// Adds the given element in the queue, iff the element is not yet in the queue.
 		/// </summary>

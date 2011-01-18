@@ -129,7 +129,7 @@ namespace LittleSharp.Buchi
 		public Node (string name, LTLFormula initialObligations)
 			: this(name)
 		{
-			ListUtils.AddsUnique(New, initialObligations);
+			QueueUtils.AddsUnique(New, initialObligations);
 		}
 		
 		/// <summary>
@@ -145,9 +145,9 @@ namespace LittleSharp.Buchi
 			: this()
 		{
 			foreach (LTLFormula obligation in initialObligations) {
-				ListUtils.AddsUnique(New, obligation);
+				QueueUtils.AddsUnique(New, obligation);
 			}
-			ListUtils.AddsUnique(Incoming, incoming.Name);
+			QueueUtils.AddsUnique(Incoming, incoming.Name);
 		}
 		
 		/// <summary>
@@ -227,13 +227,13 @@ namespace LittleSharp.Buchi
 				
 				if (node != default(Node)) {
 					foreach (string incomingNode in Incoming) {
-						ListUtils.AddsUnique(node.Incoming, incomingNode);
+						QueueUtils.AddsUnique(node.Incoming, incomingNode);
 					}
 					return automaton;
 					
 				} else {
 					Node n = new Node(this, Next);
-					ListUtils.AddsUnique(automaton.Nodes, this);
+					QueueUtils.AddsUnique(automaton.Nodes, this);
 					
 					return n.Expand(automaton);
 				}
@@ -246,7 +246,7 @@ namespace LittleSharp.Buchi
 					if (Old.Contains(notN)) {
 						return automaton;
 					} else {
-						ListUtils.AddsUnique(Old, n);
+						QueueUtils.AddsUnique(Old, n);
 						return this.Expand(automaton);
 					}
 				} else if (n is Until | n is Release | n is Or) {
@@ -274,17 +274,17 @@ namespace LittleSharp.Buchi
 					}
 					
 					if (!Old.Contains(new1)) {
-						ListUtils.AddsUnique(n1.New, new1);
+						QueueUtils.AddsUnique(n1.New, new1);
 					}
 					
 					if (!Old.Contains(new2)) {
-						ListUtils.AddsUnique(n2.New, new2);
+						QueueUtils.AddsUnique(n2.New, new2);
 					}
 										
-					ListUtils.AddsUnique(n1.Old, n);
-					ListUtils.AddsUnique(n2.Old, n);
+					QueueUtils.AddsUnique(n1.Old, n);
+					QueueUtils.AddsUnique(n2.Old, n);
 					
-					ListUtils.AddsUnique(n1.Next, next);
+					QueueUtils.AddsUnique(n1.Next, next);
 					
 					return n2.Expand(n1.Expand(automaton));
 					
@@ -293,12 +293,12 @@ namespace LittleSharp.Buchi
 					
 					Node newNode = new Node(Name, Incoming, New, Old, Next);
 					if (!Old.Contains(andN.Left)) {
-						ListUtils.AddsUnique(newNode.New, andN.Left);
+						QueueUtils.AddsUnique(newNode.New, andN.Left);
 					}
 					if (!Old.Contains(andN.Right)) {
-						ListUtils.AddsUnique(newNode.New, andN.Right);
+						QueueUtils.AddsUnique(newNode.New, andN.Right);
 					}
-					ListUtils.AddsUnique(newNode.Old, n);
+					QueueUtils.AddsUnique(newNode.Old, n);
 					
 					return newNode.Expand(automaton);
 				}

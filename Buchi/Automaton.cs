@@ -32,21 +32,21 @@ namespace LittleSharp.Buchi
 	public class Automaton
 	{
 		
-		public List<Node> Nodes  {
+		public Queue<Node> Nodes  {
 			get;
 			private set;
 		}
 		
 		public Automaton ()
 		{
-			Nodes = new List<Node>();
+			Nodes = new Queue<Node>();
 		}
 		
 		public Node Similar (Node comparable)
 		{
 			foreach (Node n in Nodes) {
-				if (ListUtils.AreListEquals(n.Old, comparable.Old)
-					&& ListUtils.AreListEquals(n.Next, comparable.Next)) {
+				if (QueueUtils.AreListEquals(n.Old, comparable.Old)
+					&& QueueUtils.AreListEquals(n.Next, comparable.Next)) {
 					return n;
 				}
 			}
